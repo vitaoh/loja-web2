@@ -1,18 +1,18 @@
-package edu.ifsp.loja.controladores;
+package edu.ifsp.loja.controllers;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import edu.ifsp.loja.modelo.Cliente;
-import edu.ifsp.loja.persistencia.ClienteDAO;
+import edu.ifsp.loja.modelo.Produto;
+import edu.ifsp.loja.persistencia.ProdutoDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet("/cliente")
-public class RecuperarClienteController extends HttpServlet {
+@WebServlet("/produto")
+public class RecuperarProdutoController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	@Override
@@ -23,15 +23,15 @@ public class RecuperarClienteController extends HttpServlet {
 		String paramId = request.getParameter("id");
 		if ((paramId != null) && !paramId.isBlank()) {
 			int id = Integer.parseInt(paramId);
-			ClienteDAO dao = new ClienteDAO();
-			Cliente cliente = dao.findById(id);
+			ProdutoDAO dao = new ProdutoDAO();
+			Produto produto = dao.findById(id);
 			
-			out.println("Cliente: " + cliente.getNome());
-			out.println("E-mail: " + cliente.getEmail());
+			out.println("Descricao: " + produto.getDescricao());
+			out.println("Preço: " + produto.getPreco());
 		} else {
-			out.println("Informe o id do cliente na URL.");
+			out.println("Informe o id do produto na URL.");
 			out.println("Exemplo:");
-			out.println("http://localhost:8080/loja-web2/cliente?id=1");
+			out.println("http://localhost:8080/loja-web2/app/produto?id=1");
 		}
 		
 	}
