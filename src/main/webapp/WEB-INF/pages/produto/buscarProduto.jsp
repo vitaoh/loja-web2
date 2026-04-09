@@ -14,6 +14,9 @@ int totalRecords = request.getAttribute("totalRecords") != null
 int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
 
 List<ProdutoDTO> produtos = (List<ProdutoDTO>) request.getAttribute("produtos");
+
+String sort  = request.getParameter("sort") != null ? request.getParameter("sort") : "";
+String order = request.getParameter("order") != null ? request.getParameter("order") : "asc";
 %>
 
 <!DOCTYPE html>
@@ -26,6 +29,8 @@ List<ProdutoDTO> produtos = (List<ProdutoDTO>) request.getAttribute("produtos");
 .pagination a { padding: 4px 8px; border: 1px solid #ccc; border-radius: 4px; text-decoration: none; }
 .pagination a.current { font-weight: bold; background: #eee; }
 .pagination a.disabled { pointer-events: none; opacity: 0.4; }
+th.sortable { cursor: pointer; user-select: none; }
+th.sortable:hover { background: #f0f0f0; }
 </style>
 <script>
 function gotoPage(page) {
@@ -42,7 +47,7 @@ function movePage(offset) {
     gotoPage(next);
 }
 
-let priceSortAsc = true;
+let priceSortAsc = <%= "asc".equals(order) ? "true" : "false" %>;
 
 function sortByPrice() {
     const tbody = document.querySelector('#results-table tbody');
@@ -56,11 +61,14 @@ function sortByPrice() {
 
     rows.forEach(row => tbody.appendChild(row));
 
-
     const th = document.getElementById('th-preco');
     th.textContent = 'Preço ' + (priceSortAsc ? '▲' : '▼');
 
     priceSortAsc = !priceSortAsc;
+
+    const form = document.querySelector('#search-form');
+    form.querySelector('input[name="sort"]').value = "preco";
+    form.querySelector('input[name="order"]').value = priceSortAsc ? "asc" : "desc";
 }
 </script>
 </head>
@@ -87,6 +95,9 @@ function sortByPrice() {
     </select><br>
 
     <input type="hidden" name="page" value="<%= currentPage %>">
+    <input type="hidden" name="sort" value="<%= sort %>">
+    <input type="hidden" name="order" value="<%= order %>">
+
     <button type="submit">Buscar</button>
 </form>
 
@@ -95,12 +106,13 @@ function sortByPrice() {
 <p> Página <strong><%= currentPage %></strong> de <strong><%= totalPages %></strong> —
     <strong><%= totalRecords %></strong> registros encontrados </p>
 
-<table border="1" width="100%">
+<table id="results-table" border="1" width="100%">
 <thead>
 <tr>
     <th>ID</th>
     <th>Descrição</th>
-	<th id="th-preco" class="sortable" onclick="sortByPrice()">Preço ▲▼</th></tr>
+    <th id="th-preco" class="sortable" onclick="sortByPrice()">Preço ▲▼</th>
+</tr>
 </thead>
 <tbody>
 <% for (ProdutoDTO p : produtos) { %>
@@ -113,18 +125,16 @@ function sortByPrice() {
 </tbody>
 </table>
 
-<input type="hidden" name="page" value="<%= form.getPage() %>">
-
 <nav class="pagination">
-    <a href="#" class="<%= form.getPage()==1 ? "disabled" : "" %>" onclick="gotoPage(1)">⏮ Primeira</a>
-    <a href="#" class="<%= form.getPage()==1 ? "disabled" : "" %>" onclick="movePage(-1)">◀ Anterior</a>
+    <a href="#" class="<%= currentPage==1 ? "disabled" : "" %>" onclick="gotoPage(1)">⏮ Primeira</a>
+    <a href="#" class="<%= currentPage==1 ? "disabled" : "" %>" onclick="movePage(-1)">◀ Anterior</a>
 
     <% for (int i = 1; i <= totalPages; i++) { %>
-        <a href="#" class="<%= i==form.getPage() ? "current" : "" %>" onclick="gotoPage(<%= i %>)"><%= i %></a>
+        <a href="#" class="<%= i==currentPage ? "current" : "" %>" onclick="gotoPage(<%= i %>)"><%= i %></a>
     <% } %>
 
-    <a href="#" class="<%= form.getPage()==totalPages ? "disabled" : "" %>" onclick="movePage(1)">Próxima ▶</a>
-    <a href="#" class="<%= form.getPage()==totalPages ? "disabled" : "" %>" onclick="gotoPage(<%= totalPages %>)">Última ⏭</a>
+    <a href="#" class="<%= currentPage==totalPages ? "disabled" : "" %>" onclick="movePage(1)">Próxima ▶</a>
+    <a href="#" class="<%= currentPage==totalPages ? "disabled" : "" %>" onclick="gotoPage(<%= totalPages %>)">Última ⏭</a>
 </nav>
 
 <% } else { %>
