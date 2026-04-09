@@ -41,6 +41,27 @@ function movePage(offset) {
     if (next < 1 || next > total) return;
     gotoPage(next);
 }
+
+let priceSortAsc = true;
+
+function sortByPrice() {
+    const tbody = document.querySelector('#results-table tbody');
+    const rows = Array.from(tbody.querySelectorAll('tr'));
+
+    rows.sort((a, b) => {
+        const priceA = parseFloat(a.cells[2].textContent.replace(',', '.')) || 0;
+        const priceB = parseFloat(b.cells[2].textContent.replace(',', '.')) || 0;
+        return priceSortAsc ? priceA - priceB : priceB - priceA;
+    });
+
+    rows.forEach(row => tbody.appendChild(row));
+
+
+    const th = document.getElementById('th-preco');
+    th.textContent = 'Preço ' + (priceSortAsc ? '▲' : '▼');
+
+    priceSortAsc = !priceSortAsc;
+}
 </script>
 </head>
 <body>
@@ -79,8 +100,7 @@ function movePage(offset) {
 <tr>
     <th>ID</th>
     <th>Descrição</th>
-    <th>Preço</th>
-</tr>
+	<th id="th-preco" class="sortable" onclick="sortByPrice()">Preço ▲▼</th></tr>
 </thead>
 <tbody>
 <% for (ProdutoDTO p : produtos) { %>

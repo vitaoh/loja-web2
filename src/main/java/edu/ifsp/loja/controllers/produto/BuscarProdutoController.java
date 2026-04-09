@@ -17,7 +17,7 @@ public class BuscarProdutoController extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		if (request.getParameterMap().isEmpty()) { /* É a primeira chamada? */
+		if (request.getParameterMap().isEmpty()) {
 			start(request, response);
 		} else {
 			search(request, response);
@@ -50,7 +50,6 @@ public class BuscarProdutoController extends HttpServlet {
 	    }
 	    form.setPageSize(pageSize);
 
-	    // Se os filtros mudaram, reinicia a página
 	    int page = 1;
 	    if (paramPage != null) {
 	        page = Integer.parseInt(paramPage);
@@ -60,11 +59,9 @@ public class BuscarProdutoController extends HttpServlet {
 
 	    ProdutoService service = new ProdutoService();
 
-	    // Total de registros para a paginação
 	    int totalRecords = service.count(form);
 	    request.setAttribute("totalRecords", totalRecords);
 
-	    // Busca paginada
 	    List<ProdutoDTO> produtos = service.search(form);
 	    request.setAttribute("produtos", produtos);
 	    request.setAttribute("form", form);
