@@ -1,10 +1,10 @@
-package edu.ifsp.loja.controllers.cliente.buscar;
+package edu.ifsp.loja.controllers.cliente;
 
 import java.io.IOException;
 import java.util.List;
 
-import edu.ifsp.loja.controllers.cliente.ClienteDTO;
 import edu.ifsp.loja.service.ClienteService;
+import edu.ifsp.loja.util.ViewHelper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -17,25 +17,33 @@ public class BuscarClienteController  extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("BuscarClienteController.doGet()");
-		request.setAttribute("dto", new BuscarClienteDTO("", true));
-		request.getRequestDispatcher("/app/cliente/buscarCliente.jsp").forward(request, response);
+		
+		if (request.getParameterMap().isEmpty()) { /* É a primeira chamada? */
+			start(request, response);
+		} else {
+			search(request, response);
+		}
+		
+	}
+
+	private void start(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		request.setAttribute("dto", new BuscarClienteForm("", true));
+		ViewHelper.forward("cliente/buscarCliente.jsp", request, response);
 	}
 	
-	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	private void search(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String nome = request.getParameter("nome");
 		String paramAtivo = request.getParameter("ativo");
 		boolean ativo = "true".equals(paramAtivo);
 		System.out.println("ativo: " + paramAtivo + ", " + ativo);
 		
 		ClienteService service = new ClienteService();
-		BuscarClienteDTO searchDTO = new BuscarClienteDTO(nome, ativo);
+		BuscarClienteForm searchDTO = new BuscarClienteForm(nome, ativo);
 		List<ClienteDTO> clientes = service.buscar(searchDTO);
 		
 		request.setAttribute("clientes", clientes);
 		request.setAttribute("dto", searchDTO);
-		request.getRequestDispatcher("/app/cliente/buscarCliente.jsp").forward(request, response);
+		ViewHelper.forward("cliente/buscarCliente.jsp", request, response);
 	}
 	
 }

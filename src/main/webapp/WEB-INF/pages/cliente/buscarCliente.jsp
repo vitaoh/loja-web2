@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ page import="edu.ifsp.loja.controllers.cliente.buscar.BuscarClienteDTO" %>
+<%@ page import="edu.ifsp.loja.controllers.cliente.BuscarClienteForm" %>
 <%@ page import="edu.ifsp.loja.controllers.cliente.ClienteDTO" %>
 <%@ page import="java.util.List" %>
 
@@ -12,11 +12,11 @@
 </head>
 <body>
 	<%
-	BuscarClienteDTO dto = (BuscarClienteDTO)request.getAttribute("dto");	
+	BuscarClienteForm dto = (BuscarClienteForm)request.getAttribute("dto");
 	%>
 
 	<h1>Buscar clientes</h1>
-	<form method="post" action="/loja-web2/cliente/buscar">
+	<form method="get" action="/loja-web2/cliente/buscar">
 		<label for="nome">Nome: </label>
 		<input type="text" name="nome" id="nome" value="<%= dto.nome() %>">
 		<br>
